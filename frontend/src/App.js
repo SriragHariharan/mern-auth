@@ -1,8 +1,12 @@
+import { RouterProvider } from "react-router-dom";
+import useRoutes from "./hooks/useRoutes";
+
 
 function App() {
-  return (
+  const router = useRoutes();
+	return (
     <div className="App">
-		Hello world
+		<RouterProvider router={router} />
     </div>
   );
 }

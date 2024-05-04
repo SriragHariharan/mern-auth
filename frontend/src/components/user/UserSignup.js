@@ -1,5 +1,6 @@
 import React from 'react'
 import { useForm } from "react-hook-form";
+import { Link } from 'react-router-dom';
 
 
 function UserSignup() {
@@ -54,7 +55,7 @@ function UserSignup() {
                 </form>
                 <hr />
                 <div className="text-center" >
-                    <p>Existing User? &nbsp;&nbsp; Login Now</p>
+                    <p>Existing User? &nbsp; <Link to={'/auth/login'}>Login Now</Link></p>
                 </div>
             </div>
         </div>

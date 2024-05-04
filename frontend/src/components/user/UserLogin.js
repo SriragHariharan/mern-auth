@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useForm } from "react-hook-form";
+import { Link } from 'react-router-dom';
 
 
 function UserLogin() {
@@ -34,7 +35,7 @@ function UserLogin() {
                 </form>
                 <hr />
                 <div className="text-center" >
-                    <p style={{textDecoration: "none"}}>New User? &nbsp;&nbsp;&nbsp; Register Now</p>
+                    <p style={{textDecoration: "none"}}>New User? &nbsp;&nbsp; <Link to={'/auth/signup'}>Register Now</Link> </p>
                 </div>
             </div>
         </div>
