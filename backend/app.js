@@ -7,7 +7,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req,res) => console.log(res.send("Hello express server")))
+//routes
+const userRouter = require('./routes/userRoutes');
+
+app.use('/api/user', userRouter);
 
 //mongodb connection code + server listening code
 const mongoose = require('mongoose')
