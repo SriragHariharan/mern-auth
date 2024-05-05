@@ -1,16 +1,20 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 require("dotenv").config();
+const cookieParser = require('cookie-parser')
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser())
 
 //routes
 const userRouter = require('./routes/userRoutes');
+const adminRouter = require('./routes/adminRoutes');
 
 app.use('/api/user', userRouter);
+app.use('/api/admin', adminRouter);
 
 //mongodb connection code + server listening code
 const mongoose = require('mongoose')
