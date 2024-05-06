@@ -1,13 +1,39 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { loginAdmin } from "../../redux-tk/adminSlice";
+import { useNavigate } from "react-router-dom";
 
 function AdminLogin() {
     const { register, formState: { errors }, handleSubmit } = useForm();
-    const onSubmit = (data) => console.log(data);
+    const[error, setError] = useState(null);
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
+
+    const onSubmit = (data) => {
+        fetch(process.env.REACT_APP_BACKEND_ADMIN_BASE_URL+'/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        }).then(resp => resp.json())
+        .then(json => {
+            console.log(json)
+            if(!json.success) setError(json.message)
+            else{
+                dispatch(loginAdmin(json.data.token));
+                navigate('/admin')
+            }
+        })
+        .catch(err => setError(err.message))
+    }
     
     return (
         <div className="container-fluid d-flex justify-content-center align-items-center" style={{height: "100vh"}}>
             <div className="shadow p-5 bg-body-tertiary" style={{width: "30rem"}}>
                 <h2 className="text-center mb-4 text-secondary">Hi Admin !</h2>
+                {error && <h2 className="text-center mb-4 text-danger">{error}</h2> }
                 <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
                     <div className="col-md-12">
                         <label className="form-label">email</label>

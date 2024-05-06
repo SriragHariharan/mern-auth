@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const { createAdminAccessToken, createAdminRefreshToken } = require('../helpers/jwtHelper');
 const User = require('../models/User.model');
+const jwt = require('jsonwebtoken')
 
 
 //admin login route
@@ -10,15 +10,17 @@ const loginAdmin = async(req, res) => {
         if(req.body.email !== process.env.ADMIN_EMAIL){
             throw new Error("Invalid credentials")
         }
-        let comparedPassword = bcrypt.compare(req.body.password, process.env.ADMIN_PASSWORD);
+        let comparedPassword = await bcrypt.compare(req.body.password, process.env.ADMIN_PASSWORD);
         if(!comparedPassword){
             throw new Error("Invalid credentials")
         }else{
-            const accessToken = createAdminAccessToken(process.env.ADMIN_EMAIL);
-            const refreshToken = createAdminRefreshToken(process.env.ADMIN_EMAIL);
-            res.cookie("adminAccessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
-            res.cookie("adminRefreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
-            return res.json({success:true, message:"Admin loggedin successfully" })
+            //const accessToken = createAdminAccessToken(process.env.ADMIN_EMAIL);
+            //const refreshToken = createAdminRefreshToken(process.env.ADMIN_EMAIL);
+            //res.cookie("adminAccessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
+            //res.cookie("adminRefreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
+            
+            const accessToken = jwt.sign({email:req.body.email}, process.env.ADMIN_ACCESS_TOKEN_SECRET, {expiresIn: '10s'});
+            return res.json({success:true, message:"Admin loggedin successfully", data:{token:accessToken} })
         } 
     } 
     catch (error) {

@@ -1,4 +1,3 @@
-const { createAccessToken, createRefreshToken } = require('../helpers/jwtHelper');
 const User = require('../models/User.model');
 const bcrypt = require('bcrypt');
 
@@ -17,11 +16,12 @@ const registerUser = async(req, res) => {
             const userObj = new User({username, email, password:hashedPassword});
             let newUser = await userObj.save();
             //generate jwt access and refresh
-            const accessToken = createAccessToken(newUser._id, newUser.username);
-            const refreshToken = createRefreshToken(newUser._id, newUser.username); 
-            res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
-            res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge:process.env.REFRESH_TOKEN_MAXAGE});
-            res.json({success:true, message:"User signup successfull", data:{username:newUser.username, userId: newUser._id}})  //send success response on user login 
+            // const accessToken = createAccessToken(newUser._id, newUser.username);
+            // const refreshToken = createRefreshToken(newUser._id, newUser.username); 
+            // res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
+            // res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge:process.env.REFRESH_TOKEN_MAXAGE});
+            const accessToken = jwt.sign({username:newUser.username, userId: newUser._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1m'});
+            res.json({success:true, message:"User signup successfull", data:{username:newUser.username, userId: newUser._id, token:accessToken}})  //send success response on user login 
         }
     } catch (error) {
         console.log(error);
@@ -43,11 +43,15 @@ const loginUser = async(req, res) => {
                 throw new Error("Wrong user credentials");
             }else{
                 //generate jwt access and refresh
-                const accessToken = createAccessToken(userDetails._id, userDetails.username);
-                const refreshToken = createRefreshToken(userDetails._id, userDetails.username); 
-                res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
-                res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
-                return res.json({success:true, message:"Welcome back", data:{username:userDetails.username, userID:userDetails._id}})
+                // const accessToken = createAccessToken(userDetails._id, userDetails.username);
+                // const refreshToken = createRefreshToken(userDetails._id, userDetails.username); 
+                // res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
+                // res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
+                // return res.json({success:true, message:"Welcome back", data:{username:userDetails.username, userID:userDetails._id}})
+                
+                const accessToken = jwt.sign({username:userDetails.username, userId: userDetails._id}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1m'});
+                res.json({success:true, message:"User signup successfull", data:{username:userDetails.username, userId: userDetails._id, token:accessToken}})  //send success response on user login 
+
             }
         }  
     } catch (error) {
