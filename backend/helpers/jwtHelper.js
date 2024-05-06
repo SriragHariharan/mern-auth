@@ -53,7 +53,8 @@ const verifyJWToken = (token, tokenSecret) => {
             if(error){
                 throw new Error("Session expired. Login to continue");
             }else{
-                resolve(decoded);
+                const {userID, username} = decoded;
+                resolve({userID, username});
             }
         });
         } catch (error) {

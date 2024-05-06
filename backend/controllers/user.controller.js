@@ -1,7 +1,6 @@
 const { createAccessToken, createRefreshToken } = require('../helpers/jwtHelper');
 const User = require('../models/User.model');
 const bcrypt = require('bcrypt');
-const expires = new Date(Date.now() + 1 * 60 * 1000);
 
 //signup a new user
 const registerUser = async(req, res) => {
@@ -20,8 +19,9 @@ const registerUser = async(req, res) => {
             //generate jwt access and refresh
             const accessToken = createAccessToken(newUser._id, newUser.username);
             const refreshToken = createRefreshToken(newUser._id, newUser.username); 
-            res.cookie("refreshToken",refreshToken, {httpOnly: true, expires});
-            res.json({success:true, message:"User signup successfull", data:{username:newUser.username, userId: newUser._id, token:accessToken}})  //send success response on user login 
+            res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
+            res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge:process.env.REFRESH_TOKEN_MAXAGE});
+            res.json({success:true, message:"User signup successfull", data:{username:newUser.username, userId: newUser._id}})  //send success response on user login 
         }
     } catch (error) {
         console.log(error);
@@ -45,11 +45,11 @@ const loginUser = async(req, res) => {
                 //generate jwt access and refresh
                 const accessToken = createAccessToken(userDetails._id, userDetails.username);
                 const refreshToken = createRefreshToken(userDetails._id, userDetails.username); 
-                res.cookie("refreshToken",refreshToken, {httpOnly: true, expires});
-                return res.json({success:true, message:"Welcome back", data:{username:userDetails.username, userID:userDetails._id, token:accessToken}})
+                res.cookie("accessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
+                res.cookie("refreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
+                return res.json({success:true, message:"Welcome back", data:{username:userDetails.username, userID:userDetails._id}})
             }
-        }
-        
+        }  
     } catch (error) {
         console.log(error);
         return res.json({success:false, message:error.message, data:{} }) //error message
@@ -65,8 +65,33 @@ const logoutUser = async(req, res) => {
     }
 }
 
+//get user details
+const getProfileDetails = async(req,res) => {
+    try {
+        const {userID} = req.userData;
+        if(userID !== req.body.userID){
+            throw new Error("Unauthrized request")
+        }else{
+            let user = await User.findOne({_id:userID}, {password:0});
+            return res.status(200).json({success:true, message:"",data:{user}})
+        }
+    } catch (error) {
+        return res.json({success:false, error_code:400, message:error.message, data:{} })
+    }
+}
+
+//to upload image
+const uploadImage = (req, res) => {
+    try {
+        console.log(req.body);
+    } catch (error) {
+        console.log("img-upload error",error.message)
+    }
+}
 
 module.exports = {
     registerUser,
     loginUser,
+    getProfileDetails,
+    uploadImage,
 }
