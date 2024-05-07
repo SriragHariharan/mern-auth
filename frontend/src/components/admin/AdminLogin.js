@@ -37,14 +37,14 @@ function AdminLogin() {
                 <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
                     <div className="col-md-12">
                         <label className="form-label">email</label>
-                        <input {...register("email", {required:true, pattern:/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i})} type="email" className="form-control" novalidate/>
+                        <input value="admin@mern-auth.com" {...register("email", {required:true, pattern:/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i})} type="email" className="form-control" />
                         {errors.email?.type === 'required' && <p style={{color:'red'}}>email required</p>}
                         {errors.email?.type === 'pattern' && <p style={{color:'red'}}>Please check your email</p>}
                     </div>
 
                     <div className="col-md-12">
                         <label className="form-label">Password</label>
-                        <input {...register("password", { required: true, minLength:6 })} type="password" className="form-control" />
+                        <input value="admin@mern-auth.com" {...register("password", { required: true, minLength:6 })} type="password" className="form-control" />
                         {errors.password?.type === 'required' && <p style={{color:'red'}}>Password required</p>}
                         {errors.password?.type === 'minLength' && <p style={{color:'red'}}>Password should me 6 or more characters</p>}
                     </div>

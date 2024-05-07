@@ -19,7 +19,7 @@ const loginAdmin = async(req, res) => {
             //res.cookie("adminAccessToken",accessToken, {httpOnly: true, maxAge:process.env.ACCESS_TOKEN_MAXAGE});
             //res.cookie("adminRefreshToken",refreshToken, {httpOnly: true, maxAge: process.env.REFRESH_TOKEN_MAXAGE});
             
-            const accessToken = jwt.sign({email:req.body.email}, process.env.ADMIN_ACCESS_TOKEN_SECRET, {expiresIn: '10s'});
+            const accessToken = jwt.sign({email:req.body.email}, process.env.ADMIN_ACCESS_TOKEN_SECRET, {expiresIn: '10m'});
             return res.json({success:true, message:"Admin loggedin successfully", data:{token:accessToken} })
         } 
     } 
@@ -44,9 +44,10 @@ const addNewUser = async(req, res) => {
             delete confirmPassword;
             const newUser = new User({username, email, password:hashedPassword});
             await newUser.save();
-            return res.status(201).json({success:true, message:"Added new User", data:{} })
+            return res.status(201).json({success:true, message:"Added new User", data:{_id:newUser._id, username:newUser.username, email:newUser.email} })
         }
     } catch (error) {
+        console.log(error.message)
         return res.status(400).json({success:false, status_code:400, message:error.message, data:{}})
     }
 }

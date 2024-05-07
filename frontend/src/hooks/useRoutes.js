@@ -56,7 +56,7 @@ function useRoutes(){
             <Route path="admin" element={<AdminAuthRoot />} >
                 <Route index element={ADMIN ? <AdminHome /> : <Navigate to={'/admin/auth/login'} /> } />
                 <Route path="add-user" element={ADMIN ? <AdminAddUser /> : <Navigate to={'/admin/auth/login'} />} />
-                <Route path="update-user" element={ADMIN ? <AdminUpdateUser /> : <Navigate to={'/admin/auth/login'} />} />
+                <Route path="update-user/:id" element={ADMIN ? <AdminUpdateUser /> : <Navigate to={'/admin/auth/login'} />} />
             </Route>
             <Route path="admin/auth" element={<AdminRoot />} >
                 <Route path="login" element={!ADMIN ? <AdminLogin /> : <Navigate to={'/admin'} />} />

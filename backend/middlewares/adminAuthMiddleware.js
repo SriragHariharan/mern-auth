@@ -11,7 +11,7 @@ const adminAuthMiddleware = (req, res, next) => {
         req.adminEmail = verified.email;  
         next();
     } catch (error) {
-        return res.json({success:false, message:error.message, error_code:404, data:{}})
+        return res.status(401).json({success:false, message:error.message, error_code:404, data:{}})
     }        
 }
 

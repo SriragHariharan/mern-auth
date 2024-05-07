@@ -1,14 +1,58 @@
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { addUser, logoutAdmin } from "../../redux-tk/adminSlice";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function AdminAddUser() {
 
+    const [error, setError] = useState(null);
     const { register, formState: { errors }, watch, handleSubmit } = useForm();
-    const onSubmit = (data) => console.log(data);
+    const dispatch = useDispatch();
+    const adminToken = useSelector(store => store.admin.admin);
+    const navigate = useNavigate();
+
+    const onSubmit = async(userData) => {
+        console.log(userData);
+        
+        try {
+            const response = await fetch(process.env.REACT_APP_BACKEND_ADMIN_BASE_URL+"/add-new-user", {
+                method:"post",
+                headers: {
+                    authorization: `Bearer ${adminToken}`,
+                    'Content-Type': 'application/json'
+                }, 
+                body: JSON.stringify(userData)
+            });
+            
+            if (response.status === 401) {
+                dispatch(logoutAdmin(null));
+                return;
+            }
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                setError(data.message);
+                console.log(data)
+            }else{
+                console.log(data);
+                dispatch(addUser(data))
+                navigate('/admin/')
+            }
+        } catch (error) {
+            setError(error.message);
+        }
+    };
 
     return (
         <div className="container-fluid d-flex justify-content-center align-items-center">
             <div className="shadow p-5 bg-body-tertiary" style={{width: "30rem"}}>
                 <h2 className="text-center mb-4 text-secondary">➕ Add user</h2>
+                {
+                    error && <h2 className="text-center mb-4 text-danger">{error}</h2>
+
+                }
                 <form  className="row g-1 needs-validation" onSubmit={handleSubmit(onSubmit)}>
                     
                     <div className="col-md-12">

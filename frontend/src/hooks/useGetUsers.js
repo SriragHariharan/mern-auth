@@ -1,36 +1,49 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { logoutAdmin } from '../redux-tk/adminSlice';
+import { allUsers, logoutAdmin } from '../redux-tk/adminSlice';
 
 function useGetUsers() {
-    const[error, setError] = useState(null);
+    const [error, setError] = useState(null);
     const [users, setUsers] = useState([]);
-    const adminToken = useSelector(store => store.admin.admin)
+    const adminToken = useSelector(store => store.admin.admin);
     const dispatch = useDispatch();
     
-    function fetchAllUsers(){
-        fetch(process.env.REACT_APP_BACKEND_ADMIN_BASE_URL+"/all-users",{
-            headers:{
-                authorization : "Bearer "+adminToken
-            }
-        })
-        .then(resp => resp.json())
-        .then(data => {
-             console.log(data);
-            if(!data.success){
-                 setError(data.message)
-                if(data.message==="jwt expired"){
-                    dispatch(logoutAdmin(null));
+    const fetchAllUsers = async () => {
+        try {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_ADMIN_BASE_URL}/all-users`, {
+                headers: {
+                    authorization: `Bearer ${adminToken}`
                 }
-            } else{
-                setUsers(data.data.users)
+            });
+            
+            if (response.status === 401) {
+                dispatch(logoutAdmin(null));
+                return;
+            } else if (!response.ok) {
+                const errorMessage = await response.text();
+                setError(`Error ${response.status}: ${errorMessage}`);
+                return;
             }
-        })
-    }
-    useEffect(() => fetchAllUsers(),[])
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                setError(data.message);
+            } else {
+                setUsers(data.data.users);
+                dispatch(allUsers(data?.data?.users))
+            }
+        } catch (error) {
+            console.error('Error fetching users:', error);
+            setError('An error occurred while fetching users');
+        }
+    };
 
+    useEffect(() => {
+        fetchAllUsers();
+    }, [adminToken]);
 
-    return {users, error}
+    return { users, error };
 }
 
-export default useGetUsers
+export default useGetUsers;
