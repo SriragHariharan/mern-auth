@@ -27,16 +27,25 @@ import AdminUpdateUser from "../components/admin/AdminUpdateUser";
 import AdminLogin from "../components/admin/AdminLogin";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAdmin } from "../redux-tk/adminSlice";
+import { logoutUser } from "../redux-tk/userSlice";
 
 function useRoutes(){
     const dispatch = useDispatch();
     const ADMIN = useSelector(store => store.admin.admin);
+    const USER = useSelector(store => store.user.userToken);
     console.log(ADMIN)
+    console.log(USER)
 
     //admin jwt expiration check
-    let isMyTokenExpired = isExpired(ADMIN);
-    if(isMyTokenExpired){
+    let isAdminyTokenExpired = isExpired(ADMIN);
+    if(isAdminyTokenExpired){
         dispatch(logoutAdmin(null));
+    }
+
+    //user jwt expiration check
+    let isMyTokenExpired = isExpired(USER);
+    if(isMyTokenExpired){
+        dispatch(logoutUser());
     }
 
     const router = createBrowserRouter(
@@ -44,12 +53,12 @@ function useRoutes(){
         <Route path="/" element={<RootLayout />}>
             {/* user routes */}
             <Route path="/" element={<UserAuthRoot />} >
-                <Route index element={<UserHomepage />} />
-                <Route path="profile" element={<UserProfile />} />
+                <Route index element={USER ? <UserHomepage /> : <Navigate to={'/auth/login'}/> } />
+                <Route path="profile" element={USER ? <UserProfile /> : <Navigate to={'/auth/login'}/>} />
             </Route>
             <Route path="/auth" element={<UserRoot />} >
-                <Route path="login" element={<UserLogin />} />
-                <Route path="signup" element={<UserSignup />} />
+                <Route path="login" element={!USER ? <UserLogin />   : <Navigate to={'/'}/>   } />
+                <Route path="signup" element={!USER ? <UserSignup /> : <Navigate to={'/'}/> } />
             </Route>
 
             {/* admin routes */}

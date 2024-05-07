@@ -10,7 +10,7 @@ const userAuthMiddleware = (req, res, next) => {
         req.username = verified.username;  
         next();
     } catch (error) {
-        return res.json({success:false, message:error.message, error_code:404, data:{}})
+        return res.status(401).json({success:false, message:error.message, error_code:404, data:{}})
     }        
 }
 
