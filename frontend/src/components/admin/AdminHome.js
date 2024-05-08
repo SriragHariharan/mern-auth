@@ -40,7 +40,7 @@ function AdminHome() {
                 console.log(data.message);
             } else {
                 console.log(data);
-                dispatch(deleteUser(userID))
+                dispatch(deleteUser(userID));
             }
         } catch (error) {
             

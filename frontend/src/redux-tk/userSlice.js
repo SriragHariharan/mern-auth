@@ -5,7 +5,8 @@ const userSlice = createSlice({
     initialState:{
         username:JSON.parse(localStorage.getItem("authUsername")) ?? null,
         userToken : JSON.parse(localStorage.getItem("authUserToken")) ?? null,
-        userID : JSON.parse(localStorage.getItem("authUserID"))
+        userID : JSON.parse(localStorage.getItem("authUserID")),
+        userProflePic : null
     },
     reducers:{
         loginUser : (state, action) => {
@@ -24,13 +25,17 @@ const userSlice = createSlice({
             state.userToken = null;
             state.username = null;
             state.userID = null;
+        },
+        setUserProfilePic : (state, action) => {
+            state.userProflePic = action.payload
         }
 }
 })
 
 export const {
     loginUser,
-    logoutUser
+    logoutUser,
+    setUserProfilePic,
 } = userSlice.actions;
 
 export default userSlice.reducer;

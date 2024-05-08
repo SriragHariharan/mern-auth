@@ -45,7 +45,7 @@ function UserLogin() {
             <div className="shadow p-5 bg-body-tertiary" style={{width: "30rem"}}>
                 <h2 className="text-center mb-4 text-secondary">Hi Welcome back</h2>
 
-                {error && <h5 className="text-center mb-4 text-danger">error</h5> } 
+                {error && <h5 className="text-center mb-4 text-danger">{error}</h5> } 
                 
                 <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
                     <div className="col-md-12">
